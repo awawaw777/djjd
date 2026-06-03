@@ -1,159 +1,476 @@
-# djjd
-// ============================================================
-// Коридор с равномерным освещением (POV-Ray)
-// ============================================================
-
-#include "colors.inc"
+"colors.inc"
 #include "textures.inc"
-#include "shapes.inc"
+
 
 global_settings {
-    ambient_light rgb <0.18, 0.18, 0.18>   // базовый заполняющий свет
-    assumed_gamma 1.0
+    
+
+ ambient_light rgb <0.05, 0.05, 0.05>   
+ 
 }
 
-// -------------------- Камера --------------------
-camera {
-    location <1, 5, -390>     // чуть ниже, чтобы лучше видеть коридор
-    look_at   <0, 4, 20>
-    angle 70
+ camera {
+  location <1, 12,-390>
+  look_at <-5, 0, 20>
+ }
+ 
+
+// Оси координат
+
+
+
+ box { <0, -10, 0>,           
+      < 0.2, 100, 0.2>             
+      texture {                  
+         pigment { color Black } 
+      }                          
+ } 
+ 
+ box { <0, -10, 0>,           
+      < 100, -9.8, 0.2>             
+      texture {                  
+         pigment { color Black } 
+      }                          
+ }
+ 
+ box { <0, -10, 0>,                                
+      < 0.2, -9.8, 100>             
+      texture {                  
+         pigment { color Blue } 
+      }                          
+ }
+     
+ // Mirror
+ 
+ 
+ box { <-5, 0, 29.5>,           
+      < 5, 13, 30>             
+      texture { pigment { color White }
+        finish {           
+                  reflection 1         
+               }
+              }
+  }                          
+ 
+ light_source {
+    <14, 8,-320>  // Позиция
+    
+    // ОЧЕНЬ ЯРКИЙ СВЕТ
+    color rgb <2.5, 2.3, 2.0>
+    
+    // Ключевые параметры для резкого обрезания
+    fade_distance 12         // Расстояние до начала резкого затухания
+    fade_power 7          // ОЧЕНЬ высокое значение = резкая граница
+    
+   
+}  
+
+light_source {
+    <14-11, 8+21,-320>  // Позиция
+    
+    // ОЧЕНЬ ЯРКИЙ СВЕТ
+    color rgb <2.5, 2.3, 2.0>
+    
+    // Ключевые параметры для резкого обрезания
+    fade_distance 8         // Расстояние до начала резкого затухания
+    fade_power 5          // ОЧЕНЬ высокое значение = резкая граница
+    
+   
 }
 
-// -------------------- Геометрия коридора --------------------
-#declare FloorY = 0;
-#declare CeilY  = 8;
-#declare LeftX  = -6;
-#declare RightX = 6;
-#declare BackZ  = -340;
-#declare FrontZ = 40;
-
-// Пол
-box {
-    <LeftX, FloorY, BackZ>, <RightX, FloorY+0.2, FrontZ>
-    texture {
-        pigment { color rgb <0.6,0.55,0.5> }
-        finish { diffuse 0.8 specular 0.2 roughness 0.1 }
-    }
+ // box
+ 
+ box { 
+    <14, 3-5, -321>,           
+    <15, 13+5, -319>             
+    texture { pigment 
+            { color White filter 0.8}
+                          
+             finish {
+                diffuse 1 
+                          
+             }            
+   }
+     no_shadow
 }
+ 
 
-// Потолок
-box {
-    <LeftX, CeilY-0.1, BackZ>, <RightX, CeilY, FrontZ>
-    texture {
-        pigment { color White }
-        finish { diffuse 0.7 }
-    }
+// left 
+ 
+ light_source {
+    <14-38, 8,-320+7>  // Позиция
+    
+    // ОЧЕНЬ ЯРКИЙ СВЕТ
+    color rgb <2.5, 2.3, 2.0>
+    
+    // Ключевые параметры для резкого обрезания
+    fade_distance 12         // Расстояние до начала резкого затухания
+    fade_power 7          // ОЧЕНЬ высокое значение = резкая граница            // ОЧЕНЬ высокое значение = резкая граница
+    
+   
 }
-
-// Левая стена
-box {
-    <LeftX, FloorY, BackZ>, <LeftX+0.3, CeilY, FrontZ>
-    texture {
-        pigment { color rgb <0.85,0.82,0.78> }
-        finish { diffuse 0.8 }
-    }
-}
-
-// Правая стена
-box {
-    <RightX-0.3, FloorY, BackZ>, <RightX, CeilY, FrontZ>
-    texture {
-        pigment { color rgb <0.85,0.82,0.78> }
-        finish { diffuse 0.8 }
-    }
-}
-
-// Задняя стена (в глубине)
-box {
-    <LeftX, FloorY, BackZ>, <RightX, CeilY, BackZ+0.3>
-    texture {
-        pigment { color Gray50 }
-        finish { diffuse 0.6 }
-    }
-}
-
-// -------------------- Зеркало в конце коридора (как в оригинале) --------------------
-box {
-    <-5, 0, 29.5>, <5, 13, 30>
-    texture {
-        pigment { color White }
-        finish { reflection 1 diffuse 0 }
-    }
-}
-
-// -------------------- Освещение: равномерный ряд встроенных светильников --------------------
-// Макрос для одного светильника с мягким площадным светом
-#macro CeilingLight(X, Z)
-    // Невидимый источник света (area_light для мягких теней)
     light_source {
-        <X, CeilY-0.05, Z>
-        color rgb <1.1, 1.05, 1.0>   // тёплый белый
-        fade_distance 12
-        fade_power 2
-        area_light <1.2, 0, 0>, <0, 0, 1.2>, 4, 4
-        adaptive 1
-        jitter
-        looks_like {
-            sphere { <0,0,0>, 0.25
-                texture {
-                    pigment { color rgbt <1,1,1,0.6> }
-                    finish { diffuse 0.2 ambient 0.8 }
-                }
-            }
-        }
-    }
-#end
-
-// Расставляем светильники вдоль оси Z от -320 до 30 с шагом 22
-// Шаг выбран так, чтобы световые пятна перекрывались, не оставляя тёмных зон.
-#local StartZ = -320;
-#local EndZ   = 30;
-#local Step   = 22;
-#local Zpos = StartZ;
-#while (Zpos <= EndZ)
-    CeilingLight(0, Zpos)      // по центру коридора
-    #local Zpos = Zpos + Step;
-#end
-
-// Дополнительные бра на стенах (опционально) – для боковой подсветки, делают свет ещё ровнее
-// Но они не обязательны. Раскомментируйте, если хотите.
-/*
-#macro WallLight(X, Z, Y)
-    light_source {
-        <X, Y, Z>
-        color rgb <0.8, 0.75, 0.7>
-        fade_distance 8
-        fade_power 2
-        area_light <0.5,0,0>, <0,0,0.5>, 2, 2
-        jitter
-    }
-#end
-#local Zpos = StartZ + 11;
-#while (Zpos <= EndZ - 11)
-    WallLight(LeftX+0.2, Zpos, 1.5)
-    WallLight(RightX-0.2, Zpos, 1.5)
-    #local Zpos = Zpos + 22;
-#end
-*/
-
-// -------------------- Декоративные плафоны (видимые) --------------------
-// Маленькие белые кубики на потолке, скрывающие источники света
-#local Zpos = StartZ;
-#while (Zpos <= EndZ)
-    box {
-        <-0.6, CeilY-0.15, Zpos-0.6>, <0.6, CeilY-0.05, Zpos+0.6>
-        texture {
-            pigment { color White }
-            finish { diffuse 0.9 specular 0.3 }
-        }
-        no_shadow   // чтобы не блокировали свет
-    }
-    #local Zpos = Zpos + Step;
-#end
-
-// -------------------- (Необязательно) лёгкий туман для глубины --------------------
-fog {
-    distance 300
-    color rgb <0.9,0.9,0.95>
-    fog_type 2
+    <14+11-38, 8+21,-320+7>  // Позиция
+    
+    // ОЧЕНЬ ЯРКИЙ СВЕТ
+    color rgb <2.5, 2.3, 2.0>
+    
+    // Ключевые параметры для резкого обрезания
+    fade_distance 8         // Расстояние до начала резкого затухания
+    fade_power 5          // ОЧЕНЬ высокое значение = резкая граница
+    
+   
 }
+ // box
+ 
+ box { 
+    <14-39, 3-5, -321+7>,           
+    <15-39, 13+5, -319+7>             
+    texture { pigment 
+            { color White filter 0.8}
+                          
+             finish {
+                diffuse 1 
+                          
+             }            
+   }
+     no_shadow
+}
+
+
+
+// 2
+
+
+// right   
+
+ 
+ light_source {
+    <14, 8,-320+40>  // Позиция
+    
+    // ОЧЕНЬ ЯРКИЙ СВЕТ
+    color rgb <2.5, 2.3, 2.0>
+    
+    // Ключевые параметры для резкого обрезания
+    fade_distance 12         // Расстояние до начала резкого затухания
+    fade_power 7          // ОЧЕНЬ высокое значение = резкая граница
+    
+   
+}  
+     light_source {
+    <14-11, 8+21,-320+40>  // Позиция
+    
+    // ОЧЕНЬ ЯРКИЙ СВЕТ
+    color rgb <2.5, 2.3, 2.0>
+    
+    // Ключевые параметры для резкого обрезания
+    fade_distance 8         // Расстояние до начала резкого затухания
+    fade_power 5          // ОЧЕНЬ высокое значение = резкая граница
+    
+   
+}
+ // box
+ 
+ box { 
+    <14, 3-5, -321+40>,           
+    <15, 13+5, -319+40>             
+    texture { pigment 
+            { color White filter 0.8}
+                          
+             finish {
+                diffuse 1 
+                          
+             }            
+   }
+     no_shadow
+}
+ 
+
+// left
+
+ 
+ light_source {
+    <14-38, 8,-320+40+7>  // Позиция
+    
+    // ОЧЕНЬ ЯРКИЙ СВЕТ
+    color rgb <2.5, 2.3, 2.0>
+    
+    // Ключевые параметры для резкого обрезания
+    fade_distance 12         // Расстояние до начала резкого затухания
+    fade_power 7          // ОЧЕНЬ высокое значение = резкая граница            // ОЧЕНЬ высокое значение = резкая граница
+    
+   
+}
+  light_source {
+    <14+11-38, 8+21,-320+40+7>  // Позиция
+    
+    // ОЧЕНЬ ЯРКИЙ СВЕТ
+    color rgb <2.5, 2.3, 2.0>
+    
+    // Ключевые параметры для резкого обрезания
+    fade_distance 8         // Расстояние до начала резкого затухания
+    fade_power 5          // ОЧЕНЬ высокое значение = резкая граница
+    
+   
+}
+ // box
+ 
+ box { 
+    <14-39, 3-5, -321+40+7>,           
+    <15-39, 13+5, -319+40+7>             
+    texture { pigment 
+            { color White filter 0.8}
+                          
+             finish {
+                diffuse 1 
+                          
+             }            
+   }
+     no_shadow
+}
+
+
+//3
+
+
+
+
+// right   
+ 
+ light_source {
+    <14, 8,-320+80>  // Позиция
+    
+    // ОЧЕНЬ ЯРКИЙ СВЕТ
+    color rgb <2.5, 2.3, 2.0>
+    
+    // Ключевые параметры для резкого обрезания
+    fade_distance 12         // Расстояние до начала резкого затухания
+    fade_power 7          // ОЧЕНЬ высокое значение = резкая граница
+    
+   
+}  
+light_source {
+    <14-11, 8+21,-320+80>  // Позиция
+    
+    // ОЧЕНЬ ЯРКИЙ СВЕТ
+    color rgb <2.5, 2.3, 2.0>
+    
+    // Ключевые параметры для резкого обрезания
+    fade_distance 8         // Расстояние до начала резкого затухания
+    fade_power 5          // ОЧЕНЬ высокое значение = резкая граница
+    
+   
+}
+ // box
+ 
+ box { 
+    <14, 3-5, -321+80>,           
+    <15, 13+5, -319+80>             
+    texture { pigment 
+            { color White filter 0.8}
+                          
+             finish {
+                diffuse 1 
+                          
+             }            
+   }
+     no_shadow
+}
+ 
+
+// left 
+ 
+ light_source {
+    <14-38, 8,-320+80+7>  // Позиция
+    
+    // ОЧЕНЬ ЯРКИЙ СВЕТ
+    color rgb <2.5, 2.3, 2.0>
+    
+    // Ключевые параметры для резкого обрезания
+    fade_distance 12         // Расстояние до начала резкого затухания
+    fade_power 7          // ОЧЕНЬ высокое значение = резкая граница           // ОЧЕНЬ высокое значение = резкая граница
+    
+   
+}
+   light_source {
+    <14+11-38, 8+21,-320+80+7>  // Позиция
+    
+    // ОЧЕНЬ ЯРКИЙ СВЕТ
+    color rgb <2.5, 2.3, 2.0>
+    
+    // Ключевые параметры для резкого обрезания
+    fade_distance 8         // Расстояние до начала резкого затухания
+    fade_power 5          // ОЧЕНЬ высокое значение = резкая граница
+    
+   
+}
+ // box
+ 
+ box { 
+    <14-39, 3-5, -321+80+7>,           
+    <15-39, 13+5, -319+80+7>             
+    texture { pigment 
+            { color White filter 0.8}
+                          
+             finish {
+                diffuse 1 
+                          
+             }            
+   }
+     no_shadow
+}
+      
+      
+// 4
+
+// right    
+ 
+ light_source {
+    <14, 8,-320+120>  // Позиция
+    
+    // ОЧЕНЬ ЯРКИЙ СВЕТ
+    color rgb <2.5, 2.3, 2.0>
+    
+    // Ключевые параметры для резкого обрезания
+    fade_distance 12         // Расстояние до начала резкого затухания
+    fade_power 7          // ОЧЕНЬ высокое значение = резкая граница
+    
+   
+}  
+light_source {
+    <14-11, 8+21,-320+120>  // Позиция
+    
+    // ОЧЕНЬ ЯРКИЙ СВЕТ
+    color rgb <2.5, 2.3, 2.0>
+    
+    // Ключевые параметры для резкого обрезания
+    fade_distance 8         // Расстояние до начала резкого затухания
+    fade_power 5          // ОЧЕНЬ высокое значение = резкая граница
+    
+   
+}
+ // box
+ 
+ box { 
+    <14, 3-5, -321+120>,           
+    <15, 13+5, -319+120>             
+    texture { pigment 
+            { color White filter 0.8}
+                          
+             finish {
+                diffuse 1 
+                          
+             }            
+   }
+     no_shadow
+}
+ 
+
+// left 
+ 
+ light_source {
+    <14-38, 8,-320+120+7>  // Позиция
+    
+    // ОЧЕНЬ ЯРКИЙ СВЕТ
+    color rgb <2.5, 2.3, 2.0>
+    
+    // Ключевые параметры для резкого обрезания
+    fade_distance 12         // Расстояние до начала резкого затухания
+    fade_power 7          // ОЧЕНЬ высокое значение = резкая граница            // ОЧЕНЬ высокое значение = резкая граница
+    
+   
+}
+ light_source {
+    <14+11-38, 8+21,-320+120+7>  // Позиция
+    
+    // ОЧЕНЬ ЯРКИЙ СВЕТ
+    color rgb <2.5, 2.3, 2.0>
+    
+    // Ключевые параметры для резкого обрезания
+    fade_distance 8         // Расстояние до начала резкого затухания
+    fade_power 5          // ОЧЕНЬ высокое значение = резкая граница
+    
+   
+}
+ // box
+ 
+ box { 
+    <14-39, 3-5, -321+120+7>,           
+    <15-39, 13+5, -319+120+7>             
+    texture { pigment 
+            { color White filter 0.8}
+                          
+             finish {
+                diffuse 1 
+                          
+             }            
+   }
+     no_shadow
+}   
+      
+      
+// landscape
+ 
+ plane { z, 30 
+   pigment { brick }
+ }
+
+ plane { x, 15
+   pigment { brick }
+ }
+
+ plane { x,-25
+   pigment { brick }
+ }
+
+ plane{ y,-10
+   pigment { checker Black,Gray scale 3 }
+ }
+ 
+ plane{ y, 30
+   pigment { wood }
+ }
+ 
+ 
+ box { <0, 0, 0>, < 10, 1, 16> 
+   pigment { wood }             
+ }
+
+ box { <9, -10, 0>, < 10, 0, 1> 
+   pigment { wood }
+ }
+
+ box { <0, -10, 0>, < 1, 0, 1>
+   pigment { wood }
+ }
+
+ box { <0, -10, 15>, < 1, 0, 16>
+   pigment { wood }
+ }
+
+ box { < 9, -10, 15>, <10, 0, 16>
+   pigment { wood }
+ }  
+ 
+  
+ sphere { <4,2,7>, 1
+   texture { pigment { color White }
+     finish {           
+       reflection 1     
+                    
+     }
+   }
+ } 
+  
+ cylinder { <4, 1, 3>,
+              <4, 3, 3 >, 
+              0.5
+    texture { pigment 
+            { color Green filter 0.8}
+                          
+             finish {
+                diffuse 1 
+                          
+             }            
+   }                      
+ }   
